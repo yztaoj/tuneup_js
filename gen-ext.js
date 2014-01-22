@@ -382,34 +382,39 @@ extend(Monkey.prototype, {
 		return {startOffset:p1, endOffset:p2};
 	},
 	globalEvent: function(){
-		var key = Math.floor(Math.random()*50);
-		switch(key){
-			case 0:
-				var orientations = [
-					UIA_DEVICE_ORIENTATION_PORTRAIT,
-					UIA_DEVICE_ORIENTATION_PORTRAIT_UPSIDEDOWN,
-					UIA_DEVICE_ORIENTATION_LANDSCAPELEFT,
-					UIA_DEVICE_ORIENTATION_LANDSCAPERIGHT
-				];
+		try{
+			var key = Math.floor(Math.random()*50);
+			switch(key){
+				case 0:
+					var orientations = [
+						UIA_DEVICE_ORIENTATION_PORTRAIT,
+						UIA_DEVICE_ORIENTATION_PORTRAIT_UPSIDEDOWN,
+						UIA_DEVICE_ORIENTATION_LANDSCAPELEFT,
+						UIA_DEVICE_ORIENTATION_LANDSCAPERIGHT
+					];
 
-				var i = Math.floor(Math.random() * orientations.length);
-				var newOrientation = orientations[i];
-				this.device.setDeviceOrientation(newOrientation);
-				return true;
-			case 1:
-				this.device.clickVolumeUp();
-				return true;
-			case 2:
-				this.device.clickVolumeDown();
-				return true;
-			case 3:
-				this.device.shake();
-				return true;
-			case 4:
-				this.device.deactivateAppForDuration(1+Math.random());
-				return true;
-			default:
-				return false;
+					var i = Math.floor(Math.random() * orientations.length);
+					var newOrientation = orientations[i];
+					this.device.setDeviceOrientation(newOrientation);
+					return true;
+				case 1:
+					this.device.clickVolumeUp();
+					return true;
+				case 2:
+					this.device.clickVolumeDown();
+					return true;
+				case 3:
+					this.device.shake();
+					return true;
+				case 4:
+					this.device.deactivateAppForDuration(1+Math.random());
+					return true;
+				default:
+					return false;
+			}
+		}
+		catch(err){
+			log(err);
 		}
 	}
 });

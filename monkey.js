@@ -12,7 +12,7 @@ target.pushTimeout(0);
 //target.delay(0.5);
 //log(target.frontMostApp().bundleID());
 //target.deactivateAppForDuration(0.1);
-var monkey = new Monkey(target, config);
+var monkey = new Monkey(target);
 while(true)
 	monkey.jump();
 //monkey.getTargets();
