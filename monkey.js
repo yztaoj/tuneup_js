@@ -3,6 +3,10 @@
 
 var target = UIATarget.localTarget();
 var app = target.frontMostApp();
+log(target.model());
+log(target.name());
+log(target.systemName());
+log(target.systemVersion());
 target.pushTimeout(0);
 //target.frontMostApp().mainWindow().logElementTree();
 //target.frontMostApp().mainWindow().logUI();
@@ -13,8 +17,11 @@ target.pushTimeout(0);
 //log(target.frontMostApp().bundleID());
 //target.deactivateAppForDuration(0.1);
 var monkey = new Monkey(target);
-while(true)
+monkey.dismissWelcome();
+while(true){
 	monkey.jump();
+	monkey.memWarn();
+}
 //monkey.getTargets();
 //log(monkey.globalEvent(tget.frontMostApp().mainWindow().buttons()[0]));
 //sv.buttons()[0].scrollToVisible();

@@ -37,10 +37,16 @@ extend(UIATarget.prototype, {
 				throw "app jumped out!!! "+newBID;
 			}
 
-			if(!app.mainWindow().inProgress())
+			try{
+				if(!app.mainWindow().inProgress())
+					break;
+				else
+					this.delay(0.1);
+			}
+			catch(err){
+				log(err);
 				break;
-			else
-				this.delay(0.1);
+			}
 		}
 
 		if (counter == 0) log("waitReaction timeout!");
@@ -212,6 +218,31 @@ function Monkey(target){
 	return this;
 }
 extend(Monkey.prototype, {
+	memWarn: function(){
+		if(this.device.model() != "iPhone Simulator") return false;
+
+		var cmd = "on memWarn()\n"+
+					"tell application \"System Events\"\n"+
+						"tell process \"iOS 模拟器\"\n"+
+							"set frontmost to true\n"+
+							"keystroke \"M\" using {command down, shift down}\n"+
+						"end tell\n"+
+					"end tell\n"+
+				"end memWarn\n"+
+				"memWarn()";
+		var host = this.device.host();
+		return host.performTaskWithPathArgumentsTimeout("/usr/bin/osascript",
+			["-e", cmd], 1);
+	},
+	dismissWelcome: function(){
+		this.device.pushTimeout(0.5);
+		this.app.flickInsideWithOptions({startOffset:{x:1,y:0.5},endOffset:{x:0,y:0.5}});
+		this.app.flickInsideWithOptions({startOffset:{x:1,y:0.5},endOffset:{x:0,y:0.5}});
+		this.app.flickInsideWithOptions({startOffset:{x:1,y:0.5},endOffset:{x:0,y:0.5}});
+		this.app.flickInsideWithOptions({startOffset:{x:1,y:0.5},endOffset:{x:0,y:0.5}});
+		this.app.flickInsideWithOptions({startOffset:{x:1,y:0.5},endOffset:{x:0,y:0.5}});
+		this.device.popTimeout();
+	},
 	findHistory: function(element){
 		//element.logElement();
 		var key = element.signature(element);
@@ -298,6 +329,10 @@ extend(Monkey.prototype, {
 	},
 	tryLogin: function(secureTextField){
 		if(!this.config || this.config.usr == "") return "impossible";
+		if(this.config.loginFailure){
+			this.config.loginFailure--;
+			return "impossible";
+		}
 
 		var ret = true;
 		var mainWindow = this.app.mainWindow();
@@ -324,6 +359,7 @@ extend(Monkey.prototype, {
 			this.device.delay(0.5);
 			var keyboard = this.app.keyboard();
 			if(keyboard.isValid() && secureTextField.hasKeyboardFocus()){
+				secureTextField.setValue("");
 				keyboard.typeString(this.config.login.psw);
 			}
 			else{
@@ -333,6 +369,7 @@ extend(Monkey.prototype, {
 
 			this.device.pushTimeout(4);
 			if(!loginButton.waitForInvalid()){
+				this.config.loginFailure = 100;
 				ret = false;
 			}
 			this.device.popTimeout();
